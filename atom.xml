@@ -6,7 +6,7 @@
   <link href="https://an0th3r.github.io/atom.xml" rel="self"/>
   
   <link href="https://an0th3r.github.io/"/>
-  <updated>2022-04-25T02:38:32.054Z</updated>
+  <updated>2022-05-04T07:13:13.751Z</updated>
   <id>https://an0th3r.github.io/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Cobalt Strike License</title>
+    <link href="https://an0th3r.github.io/Cobalt-Strike-License/"/>
+    <id>https://an0th3r.github.io/Cobalt-Strike-License/</id>
+    <published>2022-05-04T07:13:13.000Z</published>
+    <updated>2022-05-04T07:13:13.751Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>跟着许多大佬的文章分析过Cobalt Strike对License认证过程。整个License中最重要的就是解密Key。通过这个解密Key才可以对sleeve中的beacon与加载执行的PE程序进行解密。但在这个blog中不讲整个的认证流程，只说一下License的结构。（License就是cobaltstrike.auth）。由于可能会受Github的DMCA Policy影响，4.0-4.4的解密Key就不直接放出来了。如果有需要，可以直接向我<a href="mailto:an0ther1412@qq.com">发送邮件</a>并表明你的需求；）</p></blockquote><h2 id="解析过程"><a href="#解析过程" class="headerlink" title="解析过程"></a>解析过程</h2><p>根据 <code>AuthCrypto.java</code> 中60行判断读取的第一个 Int 长度的数据是否等于 <code>-889274157</code>，进入到<code>else</code>分支中，先读取了一个 Short 长度，并将剩余部分返回。</p><p><img src="/Cobalt-Strike-License/Untitled-1.png" alt="AuthCrypto"></p><p>在上一部分中返回的数据中有进行了如下解析。</p><ol><li>读取Int长度数据作为57行进行License有效时间的判断。</li><li>读取Int长度数据作为水印。</li><li>读取一个Byte长度数据，判断是否大于44作为适用版本判断。</li><li>之后不断的进行读一个Byte，再根据Byte大小读取相同长度的数据。如此循环5次，每个循环分别是读取了4.0版本到4.4版本的解密 Key。 并将读取到最后的解密Key给到 <code>SleeveResource.Setup()</code> 方法中。</li></ol><p><img src="/Cobalt-Strike-License/Untitled.png" alt="Authorization"></p><h2 id="cobaltstrike-auth-结构"><a href="#cobaltstrike-auth-结构" class="headerlink" title="cobaltstrike.auth 结构"></a>cobaltstrike.auth 结构</h2><p>根据 Cobalt Strike 4.4中 <code>AuthCrypto.java</code> 与 <code>Authorization.java</code> 解析过程分析出的 License 结构。</p><figure class="highlight plaintext"><figcaption><span>text</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">00 00 00 00  | -889274157</span><br><span class="line">00 00        | 之后的字节数</span><br><span class="line">00 00 00 00  | 29999999</span><br><span class="line">00 00 00 00  | watermark</span><br><span class="line">00           | &gt;43</span><br><span class="line"></span><br><span class="line">00           | Authorization():var8 = 16</span><br><span class="line">00*16        | len = var8 CS4.0 用来对dll解密的密钥 </span><br><span class="line"></span><br><span class="line">00           | Authorization():var10 = 16</span><br><span class="line">00*16        | len = var10 CS4.1 用来对dll解密的密钥 </span><br><span class="line"></span><br><span class="line">00           | Authorization():var12 = 16</span><br><span class="line">00*16        | len = var12 CS4.2 用来对dll解密的密钥 </span><br><span class="line"></span><br><span class="line">00           | Authorization():var14 = 16</span><br><span class="line">00*16        | len = var14 CS4.3 用来对dll解密的密钥 </span><br><span class="line"></span><br><span class="line">00           | Authorization():var14 = 16</span><br><span class="line">00*16        | len = var14 CS4.4 用来对dll解密的密钥 </span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;跟着许多大佬的文章分析过Cobalt Strike对License认证过程。整个License中最重要的就是解密Key。通过这个解密Key才可以对sleeve中的beacon与加载执行的PE程序进行解密。但在这个blog中不讲整个的认证流程，只说一</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Shiro-550</title>
