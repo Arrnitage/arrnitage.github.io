@@ -9,7 +9,7 @@
     <meta name="description" content="最近使用nuclei比较多，总结一下一些常用的命令和如何配置nuclei能让这个工具更好用  常用参数 -u：测试单个url时使用，后面跟一个url地址 -l：进行批量测试时使用，后面跟一个写了url地址的文件路径 -t：指定使用的PoC模版 -w：指定使用的workflow模版，workflow模版路径为nuclei-template&#x2F;workflow -tags：指定使用带有指定tag的Po">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nuclei Tips">
-<meta property="og:url" content="https://an0th3r.github.io/Nuclei-Tips/index.html">
+<meta property="og:url" content="https://arrnitage.github.io/Nuclei-Tips/index.html">
 <meta property="og:site_name" content="Hi, I&#39;m Arm!tage.">
 <meta property="og:description" content="最近使用nuclei比较多，总结一下一些常用的命令和如何配置nuclei能让这个工具更好用  常用参数 -u：测试单个url时使用，后面跟一个url地址 -l：进行批量测试时使用，后面跟一个写了url地址的文件路径 -t：指定使用的PoC模版 -w：指定使用的workflow模版，workflow模版路径为nuclei-template&#x2F;workflow -tags：指定使用带有指定tag的Po">
 <meta property="og:locale" content="en_US">
@@ -92,17 +92,17 @@
     <br/>
     <div id="share" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://an0th3r.github.io/Nuclei-Tips/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://an0th3r.github.io/Nuclei-Tips/&text=Nuclei Tips"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://an0th3r.github.io/Nuclei-Tips/&is_video=false&description=Nuclei Tips"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Nuclei Tips&body=Check out this article: https://an0th3r.github.io/Nuclei-Tips/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://an0th3r.github.io/Nuclei-Tips/&name=Nuclei Tips&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://an0th3r.github.io/Nuclei-Tips/&t=Nuclei Tips"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/Nuclei-Tips/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/Nuclei-Tips/&text=Nuclei Tips"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/Nuclei-Tips/&is_video=false&description=Nuclei Tips"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Nuclei Tips&body=Check out this article: https://arrnitage.github.io/Nuclei-Tips/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/Nuclei-Tips/&name=Nuclei Tips&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/Nuclei-Tips/&t=Nuclei Tips"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
     </div>
@@ -207,17 +207,17 @@
 
     <div id="share-footer" style="display: none">
       <ul>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://an0th3r.github.io/Nuclei-Tips/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://an0th3r.github.io/Nuclei-Tips/&text=Nuclei Tips"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://an0th3r.github.io/Nuclei-Tips/&is_video=false&description=Nuclei Tips"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" href="mailto:?subject=Nuclei Tips&body=Check out this article: https://an0th3r.github.io/Nuclei-Tips/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://an0th3r.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://an0th3r.github.io/Nuclei-Tips/&name=Nuclei Tips&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://an0th3r.github.io/Nuclei-Tips/&t=Nuclei Tips"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/Nuclei-Tips/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/Nuclei-Tips/&text=Nuclei Tips"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/Nuclei-Tips/&is_video=false&description=Nuclei Tips"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Nuclei Tips&body=Check out this article: https://arrnitage.github.io/Nuclei-Tips/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/Nuclei-Tips/&title=Nuclei Tips"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/Nuclei-Tips/&name=Nuclei Tips&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/Nuclei-Tips/&t=Nuclei Tips"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
     </div>

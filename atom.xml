@@ -3,11 +3,11 @@
   <title>Hi, I&#39;m Arm!tage.</title>
   
   
-  <link href="https://an0th3r.github.io/atom.xml" rel="self"/>
+  <link href="https://arrnitage.github.io/atom.xml" rel="self"/>
   
-  <link href="https://an0th3r.github.io/"/>
+  <link href="https://arrnitage.github.io/"/>
   <updated>2022-06-02T13:02:23.926Z</updated>
-  <id>https://an0th3r.github.io/</id>
+  <id>https://arrnitage.github.io/</id>
   
   <author>
     <name>Arm!tage</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>Linux Buffer Overflow</title>
-    <link href="https://an0th3r.github.io/Linux-Buffer-Overflow/"/>
-    <id>https://an0th3r.github.io/Linux-Buffer-Overflow/</id>
+    <link href="https://arrnitage.github.io/Linux-Buffer-Overflow/"/>
+    <id>https://arrnitage.github.io/Linux-Buffer-Overflow/</id>
     <published>2022-06-02T13:02:23.000Z</published>
     <updated>2022-06-02T13:02:23.926Z</updated>
     
@@ -40,8 +40,8 @@
   
   <entry>
     <title>Nuclei Tips</title>
-    <link href="https://an0th3r.github.io/Nuclei-Tips/"/>
-    <id>https://an0th3r.github.io/Nuclei-Tips/</id>
+    <link href="https://arrnitage.github.io/Nuclei-Tips/"/>
+    <id>https://arrnitage.github.io/Nuclei-Tips/</id>
     <published>2022-05-29T10:44:57.000Z</published>
     <updated>2022-05-29T10:44:57.495Z</updated>
     
@@ -63,8 +63,8 @@
   
   <entry>
     <title>BeanShell RCE 排坑</title>
-    <link href="https://an0th3r.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/"/>
-    <id>https://an0th3r.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/</id>
+    <link href="https://arrnitage.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/"/>
+    <id>https://arrnitage.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/</id>
     <published>2022-05-06T10:42:34.000Z</published>
     <updated>2022-05-06T10:42:34.105Z</updated>
     
@@ -85,8 +85,8 @@
   
   <entry>
     <title>Cobalt Strike License</title>
-    <link href="https://an0th3r.github.io/Cobalt-Strike-License/"/>
-    <id>https://an0th3r.github.io/Cobalt-Strike-License/</id>
+    <link href="https://arrnitage.github.io/Cobalt-Strike-License/"/>
+    <id>https://arrnitage.github.io/Cobalt-Strike-License/</id>
     <published>2022-05-04T07:13:13.000Z</published>
     <updated>2022-05-04T07:13:13.751Z</updated>
     
@@ -106,8 +106,8 @@
   
   <entry>
     <title>Shiro-550</title>
-    <link href="https://an0th3r.github.io/Shiro-550/"/>
-    <id>https://an0th3r.github.io/Shiro-550/</id>
+    <link href="https://arrnitage.github.io/Shiro-550/"/>
+    <id>https://arrnitage.github.io/Shiro-550/</id>
     <published>2022-04-25T02:38:32.000Z</published>
     <updated>2022-04-25T02:38:32.054Z</updated>
     
@@ -129,8 +129,8 @@
   
   <entry>
     <title>CommonsCollections5</title>
-    <link href="https://an0th3r.github.io/CommonsCollections5/"/>
-    <id>https://an0th3r.github.io/CommonsCollections5/</id>
+    <link href="https://arrnitage.github.io/CommonsCollections5/"/>
+    <id>https://arrnitage.github.io/CommonsCollections5/</id>
     <published>2022-04-25T02:24:20.000Z</published>
     <updated>2022-04-25T02:24:20.504Z</updated>
     
