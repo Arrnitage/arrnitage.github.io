@@ -6,7 +6,7 @@
   <link href="https://arrnitage.github.io/atom.xml" rel="self"/>
   
   <link href="https://arrnitage.github.io/"/>
-  <updated>2022-06-02T13:02:23.926Z</updated>
+  <updated>2022-09-20T06:13:08.249Z</updated>
   <id>https://arrnitage.github.io/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何部署CobaltStrike</title>
+    <link href="https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E9%83%A8%E7%BD%B2CobaltStrike/"/>
+    <id>https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E9%83%A8%E7%BD%B2CobaltStrike/</id>
+    <published>2022-09-20T06:13:08.000Z</published>
+    <updated>2022-09-20T06:13:08.249Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>CobaltStrike已经是Red Team中使用最广泛的远控程序，但是CobaltStrike中也存在一些问题，部分比较严重的问题只能通过修改代码进行修补，而有些问题可以通过更改部署方式实现修补</p></blockquote><h2 id="CobaltStrike-Intro"><a href="#CobaltStrike-Intro" class="headerlink" title="CobaltStrike Intro"></a>CobaltStrike Intro</h2><p>beacon –&gt; TeamServer –&gt; Controller</p><p>TeamServer默认使用50050端口作为管理端口，我将该作用端口称为TeamServer。用作接收beacon请求的端口，我称之为listener。<del>另外CobaltStrike在使用过程中可能还会使用到由red team operator 指定的socks4a服务端口</del>(狗都不用)。</p><h2 id="TeamServer-存在的问题-amp-如何规避"><a href="#TeamServer-存在的问题-amp-如何规避" class="headerlink" title="TeamServer 存在的问题 &amp; 如何规避"></a>TeamServer 存在的问题 &amp; 如何规避</h2><p>在TeamServer上目前存在如下问题：</p><ol><li>默认端口</li><li>证书指纹</li></ol><p>TeamServer上存在的问题比较好解决，通过修改端口号与更换证书即可。</p><h3 id="修改端口号"><a href="#修改端口号" class="headerlink" title="修改端口号"></a>修改端口号</h3><p>查看 <code>teamserver</code>文件最后，我们可以看到启动命令中有指定端口的配置参数 <code>-Dcobaltstrike.server_port=50050</code>，通过修改参数，即可修改端口号。</p><h3 id="更换证书"><a href="#更换证书" class="headerlink" title="更换证书"></a>更换证书</h3><p>在 <code>teamserver</code>文件中，如果路径下缺少 <code>cobaltstrike.store</code>文件，则会按照设定内容创建一个cobaltstrike固定证书。我们可以通过修改脚本文件内容并删除已经创建的 <code>cobaltstrike.store</code>文件让脚本自动创建。也可以自己通过 <code>keytool</code>命令创建一个证书文件并命名为 <code>cobaltstrike.store</code>。</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建证书</span></span><br><span class="line">keytool -keystore cobaltstrike.store -storepass armitageIsBest -genkey -keyalg RSA -<span class="built_in">alias</span> toyota.jp -dname <span class="string">&quot;CN=toyota.jp, OU=e-TOYOTA DIV, O=TOYOTA MOTOR CORPORATION, L=Toyota-Shi, S=Aichi, C=JP&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看证书</span></span><br><span class="line">keytool -list -v keystore cobaltstrike.store</span><br></pre></td></tr></table></figure><h3 id="通过代理隧道连接TeamServer"><a href="#通过代理隧道连接TeamServer" class="headerlink" title="通过代理隧道连接TeamServer"></a>通过代理隧道连接TeamServer</h3><p>在防火墙上直接关闭50050的外部连接，然后通过ssh隧道或其他代理隧道访问50050</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw deny 50050</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立SSH代理隧道</span></span><br><span class="line">ssh -i id_rsa -N -D 127.0.0.1:50500 root@XXX.XXX.XXX.XXX</span><br></pre></td></tr></table></figure><p>使用proxifer或proxychains给cobaltstrike配置代理访问TeamServer</p><h2 id="Listener-存在的问题-amp-如何规避"><a href="#Listener-存在的问题-amp-如何规避" class="headerlink" title="Listener 存在的问题 &amp; 如何规避"></a>Listener 存在的问题 &amp; 如何规避</h2><ol><li>请求流量</li><li>checksum8指纹</li><li>特殊请求地址下载stager</li></ol><h3 id="修改流量特征"><a href="#修改流量特征" class="headerlink" title="修改流量特征"></a>修改流量特征</h3><p>通过配置profile中的<code>http-get</code>与<code>http-post</code>可以直接修改C2通信过程中的流量内容。<br>使用几个工具可以快速生成你想要的流量</p><ol><li><a href="https://github.com/Peithon/JustC2file">JustC2file</a></li><li><a href="https://github.com/threatexpress/random_c2_profile">random_c2_profile</a></li><li><a href="https://github.com/CodeXTF2/Burp2Malleable">Burp2Malleable</a></li></ol><h3 id="Caddy重定向器"><a href="#Caddy重定向器" class="headerlink" title="Caddy重定向器"></a>Caddy重定向器</h3><h4 id="限制listener外部直接访问"><a href="#限制listener外部直接访问" class="headerlink" title="限制listener外部直接访问"></a>限制listener外部直接访问</h4><p>创建http协议与https协议listener分别在33080或33443端口上，通过防火墙限制两个端口的访问</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo ufw deny 33080</span><br><span class="line">sudo ufw deny 33443</span><br></pre></td></tr></table></figure><h4 id="配置profile"><a href="#配置profile" class="headerlink" title="配置profile"></a>配置profile</h4><p>在 <code>http-config</code>块中添加选项 <code>set trust_x_forwarded_for “true”;</code></p><h4 id="Caddyfile"><a href="#Caddyfile" class="headerlink" title="Caddyfile"></a>Caddyfile</h4><p>使用caddy反向代理功能(Nginx和Apache都可以实现)，将80与443端口分别代理到33080与33443端口上。这样就可以caddy转发访问到listener。<br>实际配置过程中不要配置<code>/*</code>，这样配置无法做到滤除checksum8指纹与stager请求</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">http://random-domain &#123;</span><br><span class="line">    reverse_proxy /* localhost:33080 &#123;</span><br><span class="line">        header_up X-Forwarded-For &#123;header.X-Forwarded-For&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">https://random-domain &#123;</span><br><span class="line">        reverse_proxy /* localhost:33443 &#123;</span><br><span class="line">        header_up X-Forwarded-For &#123;header.X-Forwarded-For&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="隐匿TeamServer真实IP"><a href="#隐匿TeamServer真实IP" class="headerlink" title="隐匿TeamServer真实IP"></a>隐匿TeamServer真实IP</h2><h4 id="域前置"><a href="#域前置" class="headerlink" title="域前置"></a>域前置</h4><p>这里相关博客网上有很多，而且我也没配置过。这里就不细说了。</p><h4 id="云函数-x2F-云网关"><a href="#云函数-x2F-云网关" class="headerlink" title="云函数&#x2F;云网关"></a>云函数&#x2F;云网关</h4><p>云函数这里部署可以参考搜索腾讯云函数部署，相关代码参考<a href="https://github.com/shimmeris/SCFProxy">SCFProxy</a>项目。</p><blockquote><p>值得注意的是使用参考相关文章进行部署完成后，在TeamServer上的外部IP会不断变化，这里需要在profile中设置XFF头(参考Caddy部分)。此处的流量传递过程是beacon –&gt; (云网关 –&gt; 云函数) [–&gt; caddy] –&gt; listener，如果使用了转发器转发还需要将在转发器中修改XFF头(参考Caddy的配置)，因为caddy获取到的地址是由云函数传递过来的，要将云网关&#x2F;云函数获取的真实地址传递给caddy。</p></blockquote><h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>【R1】<a href="https://hosch3n.github.io/2020/12/16/%E6%A3%80%E6%B5%8B%E4%B8%8E%E9%9A%90%E8%97%8FCobaltstrike%E6%9C%8D%E5%8A%A1%E5%99%A8/">https://hosch3n.github.io/2020/12/16/检测与隐藏Cobaltstrike服务器/</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;CobaltStrike已经是Red Team中使用最广泛的远控程序，但是CobaltStrike中也存在一些问题，部分比较严重的问题只能通过修改代码进行修补，而有些问题可以通过更改部署方式实现修补&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>Linux Buffer Overflow</title>
