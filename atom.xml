@@ -6,7 +6,7 @@
   <link href="https://arrnitage.github.io/atom.xml" rel="self"/>
   
   <link href="https://arrnitage.github.io/"/>
-  <updated>2023-01-06T02:02:38.588Z</updated>
+  <updated>2023-01-06T02:22:39.062Z</updated>
   <id>https://arrnitage.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Rust Cross Compile</title>
+    <link href="https://arrnitage.github.io/Rust-Cross-Compile/"/>
+    <id>https://arrnitage.github.io/Rust-Cross-Compile/</id>
+    <published>2023-01-06T02:22:39.000Z</published>
+    <updated>2023-01-06T02:22:39.062Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="交叉编译Linux平台程序"><a href="#交叉编译Linux平台程序" class="headerlink" title="交叉编译Linux平台程序"></a>交叉编译Linux平台程序</h2><h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><ul><li><code>rustup target add x86_64-unknown-linux-musl</code> - 安装工具链</li><li><code>brew install filosottile/musl-cross/musl-cross</code></li></ul><h3 id="编译程序"><a href="#编译程序" class="headerlink" title="编译程序"></a>编译程序</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build -—release -—target x86_64-unknown-linux-musl</span><br></pre></td></tr></table></figure><h2 id="交叉编译Windows平台程序"><a href="#交叉编译Windows平台程序" class="headerlink" title="交叉编译Windows平台程序"></a>交叉编译Windows平台程序</h2><h3 id="环境配置-1"><a href="#环境配置-1" class="headerlink" title="环境配置"></a>环境配置</h3><ul><li><code>rustup target add x86_64-pc-windows-gnu</code></li><li><code>brew install mingw-w64</code></li></ul><h3 id="编译程序-1"><a href="#编译程序-1" class="headerlink" title="编译程序"></a>编译程序</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build --release --target x86_64-pc-windows-gnu</span><br></pre></td></tr></table></figure><h2 id="工具链配置"><a href="#工具链配置" class="headerlink" title="工具链配置"></a>工具链配置</h2><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在项目目录下.cargo/config 或 ～/.cargo/config 中配置如下内容</span></span><br><span class="line"><span class="section">[target.x86_64-unknown-linux-musl]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;x86_64-linux-musl-gcc&quot;</span></span><br><span class="line"><span class="section">[target.x86_64-pc-windows-gnu]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;x86_64-w64-mingw32-gcc&quot;</span></span><br><span class="line"><span class="attr">ar</span> = <span class="string">&quot;x86_64-w64-mingw32-gcc-ar&quot;</span></span><br></pre></td></tr></table></figure><h2 id="通过LTO缩减程序体积"><a href="#通过LTO缩减程序体积" class="headerlink" title="通过LTO缩减程序体积"></a>通过LTO缩减程序体积</h2><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在Cargo.toml 中添加如下配置</span></span><br><span class="line"><span class="section">[profile.release]</span></span><br><span class="line"><span class="attr">opt-level</span> = <span class="string">&quot;z&quot;</span>     <span class="comment"># Optimize for size.</span></span><br><span class="line"><span class="attr">lto</span> = <span class="literal">true</span>         <span class="comment"># Enable Link Time Optimization</span></span><br><span class="line"><span class="attr">codegen-units</span> = <span class="number">1</span>   <span class="comment"># Reduce number of codegen units to increase optimizations.</span></span><br><span class="line"><span class="attr">panic</span> = <span class="string">&quot;abort&quot;</span>     <span class="comment"># Abort on panic</span></span><br><span class="line"><span class="attr">strip</span> = <span class="literal">true</span></span><br><span class="line"><span class="comment"># or strip = &quot;symbols&quot;   # Strip symbols from binary</span></span><br><span class="line"></span><br></pre></td></tr></table></figure><h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul><li><a href="https://www.cnblogs.com/007sx/p/15191400.html">Rust交叉编译Mac编译Linux&#x2F;Windows平台</a></li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;交叉编译Linux平台程序&quot;&gt;&lt;a href=&quot;#交叉编译Linux平台程序&quot; class=&quot;headerlink&quot; title=&quot;交叉编译Linux平台程序&quot;&gt;&lt;/a&gt;交叉编译Linux平台程序&lt;/h2&gt;&lt;h3 id=&quot;环境配置&quot;&gt;&lt;a href=&quot;#环境配置&quot;</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>利用常见致远OA后门进行打点</title>

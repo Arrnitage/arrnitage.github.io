@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="交叉编译Linux平台程序环境配置 rustup target add x86_64-unknown-linux-musl - 安装工具链 brew install filosottile&#x2F;musl-cross&#x2F;musl-cross  编译程序1cargo build -—release -—target x86_64-unknown-linux-musl  交叉编译Windows平台程序环境配置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust Cross Compile">
+<meta property="og:url" content="https://arrnitage.github.io/Rust-Cross-Compile/index.html">
+<meta property="og:site_name" content="Hi, I&#39;m Arm!tage.">
+<meta property="og:description" content="交叉编译Linux平台程序环境配置 rustup target add x86_64-unknown-linux-musl - 安装工具链 brew install filosottile&#x2F;musl-cross&#x2F;musl-cross  编译程序1cargo build -—release -—target x86_64-unknown-linux-musl  交叉编译Windows平台程序环境配置">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-01-06T02:22:39.000Z">
+<meta property="article:modified_time" content="2023-01-06T02:22:39.062Z">
+<meta property="article:author" content="Arm!tage">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Rust Cross Compile</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Hi, I&#39;m Arm!tage." type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/projects">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/%E5%88%A9%E7%94%A8%E5%B8%B8%E8%A7%81%E8%87%B4%E8%BF%9COA%E5%90%8E%E9%97%A8%E8%BF%9B%E8%A1%8C%E6%89%93%E7%82%B9/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/Rust-Cross-Compile/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/Rust-Cross-Compile/&text=Rust Cross Compile"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/Rust-Cross-Compile/&is_video=false&description=Rust Cross Compile"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Rust Cross Compile&body=Check out this article: https://arrnitage.github.io/Rust-Cross-Compile/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/Rust-Cross-Compile/&name=Rust Cross Compile&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/Rust-Cross-Compile/&t=Rust Cross Compile"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91Linux%E5%B9%B3%E5%8F%B0%E7%A8%8B%E5%BA%8F"><span class="toc-number">1.</span> <span class="toc-text">交叉编译Linux平台程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E7%A8%8B%E5%BA%8F"><span class="toc-number">1.2.</span> <span class="toc-text">编译程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91Windows%E5%B9%B3%E5%8F%B0%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">交叉编译Windows平台程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-1"><span class="toc-number">2.1.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E7%A8%8B%E5%BA%8F-1"><span class="toc-number">2.2.</span> <span class="toc-text">编译程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%93%BE%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">工具链配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87LTO%E7%BC%A9%E5%87%8F%E7%A8%8B%E5%BA%8F%E4%BD%93%E7%A7%AF"><span class="toc-number">4.</span> <span class="toc-text">通过LTO缩减程序体积</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">5.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Rust Cross Compile
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Arm!tage</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-01-06T02:22:39.000Z" itemprop="datePublished">2023 Jan 6</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="交叉编译Linux平台程序"><a href="#交叉编译Linux平台程序" class="headerlink" title="交叉编译Linux平台程序"></a>交叉编译Linux平台程序</h2><h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><ul>
+<li><code>rustup target add x86_64-unknown-linux-musl</code> - 安装工具链</li>
+<li><code>brew install filosottile/musl-cross/musl-cross</code></li>
+</ul>
+<h3 id="编译程序"><a href="#编译程序" class="headerlink" title="编译程序"></a>编译程序</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build -—release -—target x86_64-unknown-linux-musl</span><br></pre></td></tr></table></figure>
+
+<h2 id="交叉编译Windows平台程序"><a href="#交叉编译Windows平台程序" class="headerlink" title="交叉编译Windows平台程序"></a>交叉编译Windows平台程序</h2><h3 id="环境配置-1"><a href="#环境配置-1" class="headerlink" title="环境配置"></a>环境配置</h3><ul>
+<li><code>rustup target add x86_64-pc-windows-gnu</code></li>
+<li><code>brew install mingw-w64</code></li>
+</ul>
+<h3 id="编译程序-1"><a href="#编译程序-1" class="headerlink" title="编译程序"></a>编译程序</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cargo build --release --target x86_64-pc-windows-gnu</span><br></pre></td></tr></table></figure>
+
+<h2 id="工具链配置"><a href="#工具链配置" class="headerlink" title="工具链配置"></a>工具链配置</h2><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在项目目录下.cargo/config 或 ～/.cargo/config 中配置如下内容</span></span><br><span class="line"><span class="section">[target.x86_64-unknown-linux-musl]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;x86_64-linux-musl-gcc&quot;</span></span><br><span class="line"><span class="section">[target.x86_64-pc-windows-gnu]</span></span><br><span class="line"><span class="attr">linker</span> = <span class="string">&quot;x86_64-w64-mingw32-gcc&quot;</span></span><br><span class="line"><span class="attr">ar</span> = <span class="string">&quot;x86_64-w64-mingw32-gcc-ar&quot;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="通过LTO缩减程序体积"><a href="#通过LTO缩减程序体积" class="headerlink" title="通过LTO缩减程序体积"></a>通过LTO缩减程序体积</h2><figure class="highlight toml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在Cargo.toml 中添加如下配置</span></span><br><span class="line"><span class="section">[profile.release]</span></span><br><span class="line"><span class="attr">opt-level</span> = <span class="string">&quot;z&quot;</span>     <span class="comment"># Optimize for size.</span></span><br><span class="line"><span class="attr">lto</span> = <span class="literal">true</span>         <span class="comment"># Enable Link Time Optimization</span></span><br><span class="line"><span class="attr">codegen-units</span> = <span class="number">1</span>   <span class="comment"># Reduce number of codegen units to increase optimizations.</span></span><br><span class="line"><span class="attr">panic</span> = <span class="string">&quot;abort&quot;</span>     <span class="comment"># Abort on panic</span></span><br><span class="line"><span class="attr">strip</span> = <span class="literal">true</span></span><br><span class="line"><span class="comment"># or strip = &quot;symbols&quot;   # Strip symbols from binary</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/007sx/p/15191400.html">Rust交叉编译Mac编译Linux&#x2F;Windows平台</a></li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91Linux%E5%B9%B3%E5%8F%B0%E7%A8%8B%E5%BA%8F"><span class="toc-number">1.</span> <span class="toc-text">交叉编译Linux平台程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.1.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E7%A8%8B%E5%BA%8F"><span class="toc-number">1.2.</span> <span class="toc-text">编译程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91Windows%E5%B9%B3%E5%8F%B0%E7%A8%8B%E5%BA%8F"><span class="toc-number">2.</span> <span class="toc-text">交叉编译Windows平台程序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-1"><span class="toc-number">2.1.</span> <span class="toc-text">环境配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E7%A8%8B%E5%BA%8F-1"><span class="toc-number">2.2.</span> <span class="toc-text">编译程序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E9%93%BE%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">工具链配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%80%9A%E8%BF%87LTO%E7%BC%A9%E5%87%8F%E7%A8%8B%E5%BA%8F%E4%BD%93%E7%A7%AF"><span class="toc-number">4.</span> <span class="toc-text">通过LTO缩减程序体积</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">5.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/Rust-Cross-Compile/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/Rust-Cross-Compile/&text=Rust Cross Compile"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/Rust-Cross-Compile/&is_video=false&description=Rust Cross Compile"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Rust Cross Compile&body=Check out this article: https://arrnitage.github.io/Rust-Cross-Compile/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/Rust-Cross-Compile/&title=Rust Cross Compile"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/Rust-Cross-Compile/&name=Rust Cross Compile&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/Rust-Cross-Compile/&t=Rust Cross Compile"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2023
+    Arm!tage
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/projects">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
