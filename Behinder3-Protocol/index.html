@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="之前写了一个扫描seeyon后门的nuclei template， 可以用来扫描一些Behinder、Godzilla、Cmdexec的websehll，但是还不能确定这些后门能不能用，所以这次就分析常见的Behinder3.0.11版本的流量。  Behinder 流量分析部署WebShell环境部署直接使用Vulhub中tomcat&#x2F;tomcat8的docker镜像，通过部署WAR">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Behinder3 Protocol">
+<meta property="og:url" content="https://arrnitage.github.io/Behinder3-Protocol/index.html">
+<meta property="og:site_name" content="Hi, I&#39;m Arm!tage.">
+<meta property="og:description" content="之前写了一个扫描seeyon后门的nuclei template， 可以用来扫描一些Behinder、Godzilla、Cmdexec的websehll，但是还不能确定这些后门能不能用，所以这次就分析常见的Behinder3.0.11版本的流量。  Behinder 流量分析部署WebShell环境部署直接使用Vulhub中tomcat&#x2F;tomcat8的docker镜像，通过部署WAR">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675243132483.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675243199396.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675243753228.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675243803250.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675245037858.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675244588387.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675246190179.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675246034986.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675245957497.png">
+<meta property="og:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675246438739.png">
+<meta property="article:published_time" content="2023-02-02T09:20:28.000Z">
+<meta property="article:modified_time" content="2023-02-02T09:24:21.466Z">
+<meta property="article:author" content="Arm!tage">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://arrnitage.github.io/Behinder3-Protocol/1675243132483.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Behinder3 Protocol</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Hi, I&#39;m Arm!tage." type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.1.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/projects">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/Rust-Cross-Compile/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/Behinder3-Protocol/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/Behinder3-Protocol/&text=Behinder3 Protocol"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/Behinder3-Protocol/&is_video=false&description=Behinder3 Protocol"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Behinder3 Protocol&body=Check out this article: https://arrnitage.github.io/Behinder3-Protocol/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/Behinder3-Protocol/&name=Behinder3 Protocol&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/Behinder3-Protocol/&t=Behinder3 Protocol"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Behinder-%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Behinder 流量分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2WebShell"><span class="toc-number">1.1.</span> <span class="toc-text">部署WebShell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">配置调试环境</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">分析过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">源代码分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">2.2.</span> <span class="toc-text">流量分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-number">3.</span> <span class="toc-text">密码暴力破解</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Behinder3 Protocol
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Arm!tage</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-02-02T09:20:28.000Z" itemprop="datePublished">2023 Feb 2</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <blockquote>
+<p>之前写了一个扫描seeyon后门的nuclei template， 可以用来扫描一些Behinder、Godzilla、Cmdexec的websehll，但是还不能确定这些后门能不能用，所以这次就分析常见的Behinder3.0.11版本的流量。</p>
+</blockquote>
+<h2 id="Behinder-流量分析"><a href="#Behinder-流量分析" class="headerlink" title="Behinder 流量分析"></a>Behinder 流量分析</h2><h3 id="部署WebShell"><a href="#部署WebShell" class="headerlink" title="部署WebShell"></a>部署WebShell</h3><p>环境部署直接使用Vulhub中tomcat&#x2F;tomcat8的docker镜像，通过部署WAR包在本地创建一个jsp的WebShell。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+
+<p>为了了解Behinder过程，还需要对Behinder的jar包进行调试。</p>
+<h3 id="配置调试环境"><a href="#配置调试环境" class="headerlink" title="配置调试环境"></a>配置调试环境</h3><ol>
+<li><p>首先使用idea创建一个项目，导入<strong>behinder.jar</strong></p>
+<p><img src="/Behinder3-Protocol/1675243132483.png" alt="1675243132483"></p>
+</li>
+<li><p>配置远程调试</p>
+<p><img src="/Behinder3-Protocol/1675243199396.png" alt="1675243199396"></p>
+</li>
+<li><p>用远程调试的方式启动behinder.jar</p>
+<ul>
+<li><code>java8 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -jar Behinder.jar</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="分析过程"><a href="#分析过程" class="headerlink" title="分析过程"></a>分析过程</h2><h3 id="源代码分析"><a href="#源代码分析" class="headerlink" title="源代码分析"></a>源代码分析</h3><ol>
+<li><p>先抓取请求响应流量。双击打开一个WebShell后会发送两个请求，下文中分别称为 <code>Req-1</code>与 <code>Req-2</code>，其响应也称为 <code>Resp-1</code>与 <code>Resp-2</code>。</p>
+<p><img src="/Behinder3-Protocol/1675243753228.png" alt="1675243753228"><br><img src="/Behinder3-Protocol/1675243803250.png" alt="1675243803250"></p>
+</li>
+<li><p>在 <code>net.rebeyond.behinder.core.Shell.Service#doConnect</code>方法中，先生成一个3000以内随机长度的随机字符串，并传给 <code>echo</code>方法。</p>
+<p><img src="/Behinder3-Protocol/1675245037858.png" alt="1675245037858"></p>
+</li>
+<li><p>跟进 <code>net.rebeyond.behinder.core.ShellServeice#echo</code>方法。调用 <code>net.rebeyond.behinder.utils.Utils#getData</code>方法对 <code>Echo</code>类进行加密，之后调用 <code>net.rebeyond.behinder.utils.Utils#requestAndParse</code>方法发送请求。并从响应中获取Cookie用作后续请求时加入到Cookie中。</p>
+<p><img src="/Behinder3-Protocol/1675244588387.png" alt="1675244588387"></p>
+</li>
+<li><p>跟进 <code>net.rebeyond.behinder.utils.Utils#getData</code>方法，大致内容是对 <code>Echo</code>的class进行AES加密。</p>
+<p><img src="/Behinder3-Protocol/1675246190179.png" alt="1675246190179"></p>
+</li>
+<li><p>在本地使用之前生成的随机字符串构造一个JSON字符串，并使用AES加密。将加密后的结果与 <code>Resp-1</code>进行比较，计算出执行结果的插入偏移。</p>
+<p><img src="/Behinder3-Protocol/1675246034986.png" alt="1675246034986"></p>
+</li>
+<li><p>对执行结果密文进行AES解密，</p>
+<p><img src="/Behinder3-Protocol/1675245957497.png" alt="1675245957497"></p>
+</li>
+</ol>
+<h3 id="流量分析"><a href="#流量分析" class="headerlink" title="流量分析"></a>流量分析</h3><p>根据对源代码执行流程分析，现在可以对 <code>Req-1</code>的请求内容进行解密。可以看到右下角的解密内容看起来非常像是一个class文件，上面一串随机字符猜测也是生成的随机字符串。</p>
+<p><img src="/Behinder3-Protocol/1675246438739.png" alt="1675246438739"></p>
+<p>在<strong>CyberChef</strong>中构造本地的JSON字符串，并使用AES加密，与 <code>RESP-1</code>中的内容进行比较</p>
+<h2 id="密码暴力破解"><a href="#密码暴力破解" class="headerlink" title="密码暴力破解"></a>密码暴力破解</h2><p>有了以上的分析，密码暴力破解的方法也就出来了。我们可以先对一个请求进行解密，拿到bytes数据，并使用字典中的密码进行加密。发送请求去分析响应体中的内容是否满足。经过过个不同站点测试，发现只要发送相同的请求内容，则会返回相同长度的响应。根据这个特点编写密码暴力破解的脚本。</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/Arrnitage/BehinderBrute">BehinderBrute</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Behinder-%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Behinder 流量分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2WebShell"><span class="toc-number">1.1.</span> <span class="toc-text">部署WebShell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83"><span class="toc-number">1.2.</span> <span class="toc-text">配置调试环境</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E6%9E%90%E8%BF%87%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">分析过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">2.1.</span> <span class="toc-text">源代码分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90"><span class="toc-number">2.2.</span> <span class="toc-text">流量分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3"><span class="toc-number">3.</span> <span class="toc-text">密码暴力破解</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/Behinder3-Protocol/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/Behinder3-Protocol/&text=Behinder3 Protocol"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/Behinder3-Protocol/&is_video=false&description=Behinder3 Protocol"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Behinder3 Protocol&body=Check out this article: https://arrnitage.github.io/Behinder3-Protocol/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/Behinder3-Protocol/&title=Behinder3 Protocol"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/Behinder3-Protocol/&name=Behinder3 Protocol&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/Behinder3-Protocol/&t=Behinder3 Protocol"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2023
+    Arm!tage
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/projects">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
