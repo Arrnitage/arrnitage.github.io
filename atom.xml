@@ -6,7 +6,7 @@
   <link href="https://arrnitage.github.io/atom.xml" rel="self"/>
   
   <link href="https://arrnitage.github.io/"/>
-  <updated>2024-05-20T09:50:12.446Z</updated>
+  <updated>2025-03-22T12:41:24.337Z</updated>
   <id>https://arrnitage.github.io/</id>
   
   <author>
@@ -15,6 +15,26 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>如何编写BOF</title>
+    <link href="https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/"/>
+    <id>https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/</id>
+    <published>2025-03-22T12:41:24.000Z</published>
+    <updated>2025-03-22T12:41:24.337Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="什么是BOF"><a href="#什么是BOF" class="headerlink" title="什么是BOF"></a>什么是BOF</h2><p>BOF的全称是Beacon Object File。它一个使用C语言编写，运行在Beacon进程空间内，并且调用Beacon API的一段函数代码。其本质上是一个对象文件。</p><p>总所周知，从源代码到可执行程序要经历4个阶段。</p><blockquote><p>预编译 -&gt; 编译 -&gt; 汇编 -&gt; 链接</p></blockquote><p>在源代码按照此流程经历过汇编之后，会生成一个共用对象文件格式（COFF）的文件，也就是目标文件或对象文件。由于缺少链接过程，该文件无法直接使用，需要修补程序中调用的Win32 API函数的内存地址等信息，这部分工作由beacon完成。</p><h2 id="为什么要用BOF"><a href="#为什么要用BOF" class="headerlink" title="为什么要用BOF"></a>为什么要用BOF</h2><p>Cobalt Strike中集成了多种执行自定义功能的方法，如：反射DLL注入，PowerShell和.NET等。通常情况下以上方法会触发向其他进程内存写入数据的行为，这会触发EDR告警。而BOF的执行是插入在beacon自身进程中，从而规避监测。</p><h2 id="BOF编写"><a href="#BOF编写" class="headerlink" title="BOF编写"></a>BOF编写</h2><h3 id="引用beacon-h"><a href="#引用beacon-h" class="headerlink" title="引用beacon.h"></a>引用beacon.h</h3><blockquote><p>文件地址：<a href="https://github.com/Cobalt-Strike/bof_template/blob/main/beacon.h">beacon.h</a></p></blockquote><p>在beacon.h中定义了beacon的接口，如：传入参数、显示结果等。而且在使用不同版本的Cobalt Strike时，需要注意使用的Beacon API是否与之适配。</p><h3 id="调用Win32-API函数"><a href="#调用Win32-API函数" class="headerlink" title="调用Win32 API函数"></a>调用Win32 API函数</h3><p>在调用Win32 API前，需要对函数重新定义，方法如下</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINBASEAPI &lt;return_type&gt; WINAPI &lt;dll_name&gt;$&lt;function_name&gt; (&lt;parameters&gt;)</span><br></pre></td></tr></table></figure><p>例如我需要在BOF中调用<code>HeapFree</code>，则需要进行如下定义</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINBASEAPI <span class="type">void</span> * WINAPI KERNEL32$HeapFree (HANDLE hHeap, DWORD dwFlags, LPVOID lpMem);</span><br></pre></td></tr></table></figure><h3 id="调用libc函数"><a href="#调用libc函数" class="headerlink" title="调用libc函数"></a>调用libc函数</h3><p>在使用libc函数时也需要定义，方法与调用Win32 API函数大致相同。这里直接通过举例说明</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINBASEAPI <span class="type">void</span> * __cdecl MSVCRT$<span class="built_in">malloc</span>(<span class="type">size_t</span> _Size);</span><br></pre></td></tr></table></figure><h3 id="编写代码"><a href="#编写代码" class="headerlink" title="编写代码"></a>编写代码</h3><p>通常情况下入口函数为<code>void go(char * args, int alen)</code>。当然也可以将入口函数修改为其他名字，但是在调用的时候需要指定入口函数名。</p><h3 id="cna脚本调用"><a href="#cna脚本调用" class="headerlink" title="cna脚本调用"></a>cna脚本调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$handle = openf(script_resource(<span class="string">&quot;cs_read_virtual_memory. $+ $barch $+ .o&quot;</span>));</span><br><span class="line">$data   = readb($handle, -<span class="number">1</span>);</span><br><span class="line">closef($handle);</span><br><span class="line"></span><br><span class="line">beacon_inline_execute($bid, $data, <span class="string">&quot;go&quot;</span>, $args);</span><br></pre></td></tr></table></figure><ul><li><code>$bid</code>: beacon ID</li><li><code>$data</code>: BOF文件</li><li><code>&quot;go&quot;</code>: 入口函数名</li><li><code>$args</code>: BOF参数</li></ul><h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>在编写BOF时，特别需要BOF的崩溃。由于BOF是插入到beacon中执行，所以BOF的崩溃会直接导致beacon进程中止，且BOF不适用长期运行的功能，如网络扫描、代理等。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;h2 id=&quot;什么是BOF&quot;&gt;&lt;a href=&quot;#什么是BOF&quot; class=&quot;headerlink&quot; title=&quot;什么是BOF&quot;&gt;&lt;/a&gt;什么是BOF&lt;/h2&gt;&lt;p&gt;BOF的全称是Beacon Object File。它一个使用C语言编写，运行在Beacon进程空间内，并且</summary>
+      
+    
+    
+    
+    
+  </entry>
   
   <entry>
     <title>CVE-2021-33044登录方法</title>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="什么是BOFBOF的全称是Beacon Object File。它一个使用C语言编写，运行在Beacon进程空间内，并且调用Beacon API的一段函数代码。其本质上是一个对象文件。 总所周知，从源代码到可执行程序要经历4个阶段。  预编译 -&gt; 编译 -&gt; 汇编 -&gt; 链接  在源代码按照此流程经历过汇编之后，会生成一个共用对象文件格式（COFF）的文件，也就是目标文件或对象">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何编写BOF">
+<meta property="og:url" content="https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/index.html">
+<meta property="og:site_name" content="Hi, I&#39;m Arm!tage.">
+<meta property="og:description" content="什么是BOFBOF的全称是Beacon Object File。它一个使用C语言编写，运行在Beacon进程空间内，并且调用Beacon API的一段函数代码。其本质上是一个对象文件。 总所周知，从源代码到可执行程序要经历4个阶段。  预编译 -&gt; 编译 -&gt; 汇编 -&gt; 链接  在源代码按照此流程经历过汇编之后，会生成一个共用对象文件格式（COFF）的文件，也就是目标文件或对象">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-03-22T12:41:24.000Z">
+<meta property="article:modified_time" content="2025-03-22T12:41:24.337Z">
+<meta property="article:author" content="Arm!tage">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>如何编写BOF</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="Hi, I&#39;m Arm!tage." type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.0.0-rc2"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/projects">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/CVE-2021-33044%E7%99%BB%E5%BD%95%E6%96%B9%E6%B3%95/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&text=如何编写BOF"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&is_video=false&description=如何编写BOF"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=如何编写BOF&body=Check out this article: https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&name=如何编写BOF&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&t=如何编写BOF"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFBOF"><span class="toc-number">1.</span> <span class="toc-text">什么是BOF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8BOF"><span class="toc-number">2.</span> <span class="toc-text">为什么要用BOF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BOF%E7%BC%96%E5%86%99"><span class="toc-number">3.</span> <span class="toc-text">BOF编写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E7%94%A8beacon-h"><span class="toc-number">3.1.</span> <span class="toc-text">引用beacon.h</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8Win32-API%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">调用Win32 API函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8libc%E5%87%BD%E6%95%B0"><span class="toc-number">3.3.</span> <span class="toc-text">调用libc函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81"><span class="toc-number">3.4.</span> <span class="toc-text">编写代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cna%E8%84%9A%E6%9C%AC%E8%B0%83%E7%94%A8"><span class="toc-number">3.5.</span> <span class="toc-text">cna脚本调用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">最后</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        如何编写BOF
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Arm!tage</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-03-22T12:41:24.000Z" itemprop="datePublished">2025 Mar 22</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="什么是BOF"><a href="#什么是BOF" class="headerlink" title="什么是BOF"></a>什么是BOF</h2><p>BOF的全称是Beacon Object File。它一个使用C语言编写，运行在Beacon进程空间内，并且调用Beacon API的一段函数代码。其本质上是一个对象文件。</p>
+<p>总所周知，从源代码到可执行程序要经历4个阶段。</p>
+<blockquote>
+<p>预编译 -&gt; 编译 -&gt; 汇编 -&gt; 链接</p>
+</blockquote>
+<p>在源代码按照此流程经历过汇编之后，会生成一个共用对象文件格式（COFF）的文件，也就是目标文件或对象文件。由于缺少链接过程，该文件无法直接使用，需要修补程序中调用的Win32 API函数的内存地址等信息，这部分工作由beacon完成。</p>
+<h2 id="为什么要用BOF"><a href="#为什么要用BOF" class="headerlink" title="为什么要用BOF"></a>为什么要用BOF</h2><p>Cobalt Strike中集成了多种执行自定义功能的方法，如：反射DLL注入，PowerShell和.NET等。通常情况下以上方法会触发向其他进程内存写入数据的行为，这会触发EDR告警。而BOF的执行是插入在beacon自身进程中，从而规避监测。</p>
+<h2 id="BOF编写"><a href="#BOF编写" class="headerlink" title="BOF编写"></a>BOF编写</h2><h3 id="引用beacon-h"><a href="#引用beacon-h" class="headerlink" title="引用beacon.h"></a>引用beacon.h</h3><blockquote>
+<p>文件地址：<a target="_blank" rel="noopener" href="https://github.com/Cobalt-Strike/bof_template/blob/main/beacon.h">beacon.h</a></p>
+</blockquote>
+<p>在beacon.h中定义了beacon的接口，如：传入参数、显示结果等。而且在使用不同版本的Cobalt Strike时，需要注意使用的Beacon API是否与之适配。</p>
+<h3 id="调用Win32-API函数"><a href="#调用Win32-API函数" class="headerlink" title="调用Win32 API函数"></a>调用Win32 API函数</h3><p>在调用Win32 API前，需要对函数重新定义，方法如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINBASEAPI &lt;return_type&gt; WINAPI &lt;dll_name&gt;$&lt;function_name&gt; (&lt;parameters&gt;)</span><br></pre></td></tr></table></figure>
+
+<p>例如我需要在BOF中调用<code>HeapFree</code>，则需要进行如下定义</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINBASEAPI <span class="type">void</span> * WINAPI KERNEL32$HeapFree (HANDLE hHeap, DWORD dwFlags, LPVOID lpMem);</span><br></pre></td></tr></table></figure>
+
+<h3 id="调用libc函数"><a href="#调用libc函数" class="headerlink" title="调用libc函数"></a>调用libc函数</h3><p>在使用libc函数时也需要定义，方法与调用Win32 API函数大致相同。这里直接通过举例说明</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WINBASEAPI <span class="type">void</span> * __cdecl MSVCRT$<span class="built_in">malloc</span>(<span class="type">size_t</span> _Size);</span><br></pre></td></tr></table></figure>
+
+<h3 id="编写代码"><a href="#编写代码" class="headerlink" title="编写代码"></a>编写代码</h3><p>通常情况下入口函数为<code>void go(char * args, int alen)</code>。当然也可以将入口函数修改为其他名字，但是在调用的时候需要指定入口函数名。</p>
+<h3 id="cna脚本调用"><a href="#cna脚本调用" class="headerlink" title="cna脚本调用"></a>cna脚本调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$handle = openf(script_resource(<span class="string">&quot;cs_read_virtual_memory. $+ $barch $+ .o&quot;</span>));</span><br><span class="line">$data   = readb($handle, -<span class="number">1</span>);</span><br><span class="line">closef($handle);</span><br><span class="line"></span><br><span class="line">beacon_inline_execute($bid, $data, <span class="string">&quot;go&quot;</span>, $args);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>$bid</code>: beacon ID</li>
+<li><code>$data</code>: BOF文件</li>
+<li><code>&quot;go&quot;</code>: 入口函数名</li>
+<li><code>$args</code>: BOF参数</li>
+</ul>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>在编写BOF时，特别需要BOF的崩溃。由于BOF是插入到beacon中执行，所以BOF的崩溃会直接导致beacon进程中止，且BOF不适用长期运行的功能，如网络扫描、代理等。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFBOF"><span class="toc-number">1.</span> <span class="toc-text">什么是BOF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8BOF"><span class="toc-number">2.</span> <span class="toc-text">为什么要用BOF</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BOF%E7%BC%96%E5%86%99"><span class="toc-number">3.</span> <span class="toc-text">BOF编写</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E7%94%A8beacon-h"><span class="toc-number">3.1.</span> <span class="toc-text">引用beacon.h</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8Win32-API%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">调用Win32 API函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B0%83%E7%94%A8libc%E5%87%BD%E6%95%B0"><span class="toc-number">3.3.</span> <span class="toc-text">调用libc函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E5%86%99%E4%BB%A3%E7%A0%81"><span class="toc-number">3.4.</span> <span class="toc-text">编写代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cna%E8%84%9A%E6%9C%AC%E8%B0%83%E7%94%A8"><span class="toc-number">3.5.</span> <span class="toc-text">cna脚本调用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E"><span class="toc-number">4.</span> <span class="toc-text">最后</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&text=如何编写BOF"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&is_video=false&description=如何编写BOF"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=如何编写BOF&body=Check out this article: https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&title=如何编写BOF"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&name=如何编写BOF&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://arrnitage.github.io/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99BOF/&t=如何编写BOF"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2018-2025
+    Arm!tage
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/projects">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+ 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script> 
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script> 
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
